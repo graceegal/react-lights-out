@@ -30,7 +30,7 @@ import "./Board.css";
 // nrows = board.length
 // ncols = board[0].length
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows = 5, ncols = 5 }) {
   const [board, setBoard] = useState(createBoard());
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
@@ -49,7 +49,7 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
         initialBoard[r].push(randomBool());
       }
     }
-
+    console.log(initialBoard);
     return initialBoard;
   }
 
@@ -63,19 +63,31 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     return true;
   }
 
-  function flipCellsAround(coord) {
+  function flipCellsAround(coord, filteredCoords) {
     setBoard(oldBoard => {
       const [y, x] = coord.split("-").map(Number);
 
-      const flipCell = (y, x, boardCopy) => {
-        // if this coord is actually on board, flip it
+      const coordinates = [[y, x], [y + 1, x], [y, x + 1], [y - 1, x], [y, x - 1]];
+      const filteredCoords = coordinates.filter(c => board[c[0]][c[1]] != undefined);
+      const boardCopy = structuredClone(oldBoard);
 
+
+      filteredCoords.forEach(e => flipCell(e, boardCopy));
+      const flipCell = (arr, boardCopy) => {
+        // if this coord is actually on board, flip it
+        const x = arr[1];
+        const y = arr[0];
         if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
           boardCopy[y][x] = !boardCopy[y][x];
         }
       };
 
+      filteredCoords.forEach(e => flipCell(e, boardCopy));
+
+
+      return boardCopy;
       // TODO: Make a (deep) copy of the oldBoard
+
 
       // TODO: in the copy, flip this cell and the cells around it
 
@@ -88,7 +100,14 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
   // TODO
 
   return (
-    <div className="cell" flipCellsAroundMe={flipCellsAround} coord={[x, y]}></div>
+    <div>
+      for (let row of board){
+        <div className="row">
+          {row.map(c => <Cell flipCellsAroundMe={flipCellsAround} isLit={c} />)}
+        </div>
+      }
+    </div>
+    // <div className="cell" flipCellsAroundMe={flipCellsAround} coord={[x, y]}></div>
   );
   // make table board
 
