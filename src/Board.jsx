@@ -27,18 +27,40 @@ import "./Board.css";
  *
  **/
 
+// nrows = board.length
+// ncols = board[0].length
+
 function Board({ nrows, ncols, chanceLightStartsOn }) {
   const [board, setBoard] = useState(createBoard());
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
     let initialBoard = [];
-    // TODO: create array-of-arrays of true/false values
+
+    function randomBool() {
+      const bools = [true, false];
+      const idx = Math.floor(Math.random() * 2);
+      return bools[idx];
+    }
+
+    for (let r = 0; r < nrows; r++) {
+      initialBoard.push([]);
+      for (let c = 0; c < ncols; c++) {
+        initialBoard[r].push(randomBool());
+      }
+    }
+
     return initialBoard;
   }
 
   function hasWon() {
-    // TODO: check the board in state to determine whether the player has won.
+    for (let row in board) {
+      if (row.includes(true)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   function flipCellsAround(coord) {
@@ -65,6 +87,9 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
 
   // TODO
 
+  return (
+    <div className="cell" flipCellsAroundMe={flipCellsAround} coord={[x, y]}></div>
+  );
   // make table board
 
   // TODO
